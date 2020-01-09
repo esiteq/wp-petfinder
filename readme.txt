@@ -43,6 +43,10 @@ Displays search results. Available options:
 
 **sort**: sorting order. Values: recent, -recent, distance, -distance, random. Default is recent.
 
+[pf_details]
+
+Displays animal details. After setting the page, go to plugin options and choose it in Animal details page drop down list. The page with animal details will be automatically created on first plugin activation.
+
 == Widgets ==
 
 = WPPF Animals From Shelter =
@@ -139,4 +143,4 @@ No upgrade issues are known.
 
 == Donate ==
 
-My name is Alex and I am a volunteer that helps stray cats. If you want to support plugin's development and help animals, you can donate some amount via PayPal by clicking Donation link.
+My name is Alex and I am a volunteer that helps stray cats. This plugin will always be free for everyone. If you want to support plugin's development and help animals, you can donate some amount via PayPal by clicking Donation link.

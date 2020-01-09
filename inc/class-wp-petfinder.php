@@ -70,7 +70,7 @@ class WP_Petfinder
         if ($animal['status'] != 'adopted')
         {
 ?>
-        <a href="<?php echo $this->adopt_link($animal); ?>" class="wppf-button wppf-button-adopt"><?php _e('Adopt Me!', 'wppf'); ?></a>
+        <a href="<?php echo esc_attr($this->adopt_link($animal)); ?>" class="wppf-button wppf-button-adopt"><?php _e('Adopt Me!', 'wppf'); ?></a>
 <?php
         }
     }
@@ -114,13 +114,15 @@ class WP_Petfinder
      */
     public function wp_head()
     {
-        if ($this->get_option('custom_css', '') != ''):
+        if ($this->get_option('custom_css', '') != '')
+        {
+            // I am not sure if it is a good idea to sanitize CSS, but let's try it
 ?>
 <style type="text/css">
-<?php echo $this->get_option('custom_css', ''); ?>
+<?php echo sanitize_text_field($this->get_option('custom_css', '')); ?>
 </style>
 <?php
-        endif;
+        }
     }
     /**
      * WP_Petfinder::admin_notices()
@@ -155,16 +157,25 @@ class WP_Petfinder
                 if (is_numeric($test) && $cache == true)
                 {
 ?>
-<div id="message" class="notice notice-info is-dismissible">
+<div class="notice notice-info is-dismissible">
 	<p><?php _e('We noticed that you have activated persistent object cache plugin (such as Redis Object Cache), but also have enabled this plugin\'s internal cache. You may want to disable internal caching to improve performance. To do that, turn internal cache off in plugin options ', 'wppf'); ?> <a href="admin.php?page=wppf_options"><?php _e('here', 'wppf'); ?></a>.</p>
 </div>
 <?php
                 }
             }
         }
+        // check animal detail page
+        if ($this->get_option('animal_page', 0) == 0)
+        {
+?>
+<div class="notice notice-error is-dismissible">
+	<p><?php _e('You have not set Animal details page, so clicking animal link in search results will have no effect. Please fix it ', 'wppf'); ?> <a href="admin.php?page=wppf_options"><?php _e('here', 'wppf'); ?></a>.</p>
+</div>
+<?php
+        }
         if ($this->get_option('api_key', '') == '' || $this->get_option('api_secret', '') == ''):
 ?>
-<div id="message" class="notice notice-error is-dismissible">
+<div class="notice notice-error is-dismissible">
 	<p><?php _e('You have not set Petfinder API key and/or Petfinder API secret.', 'wppf'); ?> <a href="admin.php?page=wppf_options"><?php _e('Click this link to fix', 'wppf'); ?></a>.</p>
 </div>
 <?php
@@ -199,13 +210,37 @@ class WP_Petfinder
         }
         if (!$this->ad_link)
         {
-            $this->ad_link = get_permalink($this->get_option('animal_page', 0));
+            $page = $this->get_option('animal_page', 0);
+            if ($page > 0)
+            {
+                $this->ad_link = get_permalink($page);
+            }
+            else
+            {
+                $this->ad_link = '#';
+            }
         }
         if ($this->permalinks_active())
         {
-            return $this->ad_link . $id. '/';
+            if ($this->ad_link == '#')
+            {
+                $link = $this->ad_link;
+            }
+            else
+            {
+                $link = $this->ad_link . $id. '/';
+            }
+            return $link;
         }
-        return $this->ad_link . '&id='. $id;
+        if ($this->ad_link == '#')
+        {
+            $link = $this->ad_link;
+        }
+        else
+        {
+            $link = $this->ad_link . '&id='. $id;
+        }
+        return $link;
     }
     /**
      * WP_Petfinder::get_current_page()
@@ -218,6 +253,7 @@ class WP_Petfinder
         $tmp = explode('/', $_SERVER['REQUEST_URI']);
         if (isset($_GET['page']))
         {
+            // sanitize
             $this->paged = intval($_GET['page']);
         }
         else
@@ -263,20 +299,6 @@ class WP_Petfinder
      */
     public function wppf_animal_gallery($animal)
     {
-/*
-?>
-        <div class="carousel">
-<?php
-        foreach ($animal['photos'] as $photo)
-        {
-?>
-                <div><img src="<?php echo esc_attr($photo['full']); ?>" width="100%" /></div>
-<?php
-        }
-?>
-        </div>
-<?php
-*/
         require $this->locate_template('animal-gallery-slick.php');
     }
     public function adopt_link()
@@ -319,7 +341,8 @@ class WP_Petfinder
      */
     public function get_view()
     {
-        return isset($_GET['view']) ? $_GET['view'] : $this->view;
+        // sanitize
+        return isset($_GET['view']) ? sanitize_text_field($_GET['view']) : $this->view;
     }
     /**
      * WP_Petfinder::wppf_before_search_results()
@@ -331,7 +354,7 @@ class WP_Petfinder
         if ($this->view_only) return;
         $view = $this->get_view();
 ?>
-<div class="wppf-view-links"><a class="<?php echo ($view == 'grid') ? 'active' : ''; ?>" href="<?php echo $this->get_view_uri('grid'); ?>">Grid view</a> | <a class="<?php echo ($view == 'list') ? 'active' : ''; ?>" href="<?php echo $this->get_view_uri('list'); ?>">List view</a></div>
+<div class="wppf-view-links"><a class="<?php echo ($view == 'grid') ? 'active' : ''; ?>" href="<?php echo esc_attr($this->get_view_uri('grid')); ?>">Grid view</a> | <a class="<?php echo ($view == 'list') ? 'active' : ''; ?>" href="<?php echo esc_attr($this->get_view_uri('list')); ?>">List view</a></div>
 <?php
     }
     /**
@@ -529,6 +552,7 @@ class WP_Petfinder
      */
     public function is_grid()
     {
+        // not sanitizing because $_GET is used only for comparison here
         return isset($_GET['view']) ? ($_GET['view'] == 'grid' ? true : false) : true;
     }
     /**
@@ -732,7 +756,7 @@ d($desc);
 */
         $animals = $this->get_animals(['organization'=>'NY606', 'type'=>'cat']);
 ?>
-    <p>Get Animals (source: <?php echo $this->source; ?>)</p>
+    <p>Get Animals (source: <?php echo esc_html($this->source); ?>)</p>
     <table class="widefat fixed zebra" cellspacing="0">
         <thead>
             <tr>
@@ -753,7 +777,7 @@ d($desc);
 foreach ($animals as $animal):
 ?>
             <tr>
-                <td class="td-photo"><div class="animal-thumb" style="background-image:url(<?php echo $animal['thumbnail']; ?>);"></div></td>
+                <td class="td-photo"><div class="animal-thumb" style="background-image:url(<?php echo sanitize_text_field($animal['thumbnail']); ?>);"></div></td>
                 <td class="td-images"><?php echo count($animal['photos']); ?></td>
                 <td class="td-id"><?php echo esc_html($animal['id']); ?></td>
                 <td class="td-name"><a href="<?php echo $animal['url']; ?>" target="_blank"><?php echo esc_html($animal['name']); ?></a></td>
@@ -761,8 +785,8 @@ foreach ($animals as $animal):
                 <td class="td-gender"><?php echo esc_html($animal['gender']); ?></td>
                 <td class="td-age"><?php echo esc_html($animal['age']); ?></td>
                 <td class="td-breed"><?php echo esc_html($animal['breed']); ?></pre></td>
-                <td class="td-status"><a href="<?php echo $this->get_animal_permalink($animal['id']); ?>" target="_blank"><?php echo esc_html($animal['status']); ?></a></td>
-                <td class="td-desc"><div><?php echo $animal['description']; ?></div></td>
+                <td class="td-status"><a href="<?php echo esc_attr($this->get_animal_permalink($animal['id'])); ?>" target="_blank"><?php echo esc_html($animal['status']); ?></a></td>
+                <td class="td-desc"><div><?php echo esc_html($animal['description']); ?></div></td>
             </tr>
 <?php
 endforeach;
@@ -919,6 +943,7 @@ $wp_object_cache->stats();
             $animal['source'] = 'cache';
         }
         $animal['description'] = $this->get_description($animal['url'], $expire);
+        $animal['description'] = apply_filters('wppf_description', $animal['description'], $id);
         $animal = $this->get_animal_data($animal);
         return $animal;
     }
@@ -1202,8 +1227,9 @@ $wp_object_cache->stats();
         $genders = $this->get_animal_gender_array();
         foreach ($genders as $key => $value)
         {
-            $sel = ($_GET['gender'] == $key) ? ' selected="selected"' : '';
-            echo '<option value="', $key, '"', $sel, '>', $value, '</option>';
+            // sanitize
+            $sel = (sanitize_text_field($_GET['gender']) == $key) ? ' selected="selected"' : '';
+            echo '<option value="', esc_attr($key), '"', $sel, '>', esc_html($value), '</option>';
         }
     }
     /**
@@ -1213,13 +1239,14 @@ $wp_object_cache->stats();
      */
     public function animal_type_options()
     {
-        $t = isset($_GET['type']) ? $_GET['type'] : 'dog';
+        // sanitize
+        $t = isset($_GET['type']) ? sanitize_text_field($_GET['type']) : 'dog';
         $types = wppf()->get_animal_types();
         foreach ($types as $type)
         {
             $sel = (strtolower($type['name']) == $t) ? ' selected="selected"' : '';
 ?>
-<option value="<?php echo esc_attr(strtolower($type['name'])); ?>"<?php echo $sel; ?>><?php echo esc_attr($type['name']); ?></option>
+<option value="<?php echo esc_attr(strtolower($type['name'])); ?>"<?php echo $sel; ?>><?php echo esc_html($type['name']); ?></option>
 <?php
         }
     }
@@ -1293,11 +1320,11 @@ $wp_object_cache->stats();
     private function get_animal_id()
     {
         global $wp;
-        $id = isset($_GET['id']) ? intval($_GET['id']) : 0;
-        $id = isset($_GET['animal_id']) ? intval($_GET['animal_id']) : $id;
+        $id = isset($_GET['id']) ? intval($_GET['id']) : 0; // sanitize intval
+        $id = isset($_GET['animal_id']) ? intval($_GET['animal_id']) : $id; // sanitize intval
         if ($this->permalinks_active())
         {
-            $newid = isset($wp->query_vars['page']) ? $wp->query_vars['page'] : 0;
+            $newid = isset($wp->query_vars['page']) ? intval($wp->query_vars['page']) : 0; // sanitize intval
         }
         if ($newid > 0)
         {
@@ -1322,10 +1349,10 @@ $wp_object_cache->stats();
             $animal = $this->get_animal($id);
             if (is_numeric($animal['id']))
             {
-                if ($atts['display'])
+                if (isset($atts['display']))
                 {
                     $var = $atts['display'];
-                    echo $animal[$var];
+                    echo esc_html($animal[$var]);
                 }
             }
             else
@@ -1389,15 +1416,15 @@ $wp_object_cache->stats();
         ob_start();
         if (!isset($_GET['location']))
         {
-            $_GET['location'] = isset($atts['location']) ? $atts['location'] : '';
+            $_GET['location'] = isset($atts['location']) ? sanitize_text_field($atts['location']) : '';
         }
         if (!isset($_GET['type']))
         {
-            $_GET['type'] = isset($atts['type']) ? $atts['type'] : '';
+            $_GET['type'] = isset($atts['type']) ? sanitize_text_field($atts['type']) : '';
         }
         if (!isset($_GET['gender']))
         {
-            $_GET['gender'] = isset($atts['gender']) ? $atts['gender'] : '';
+            $_GET['gender'] = isset($atts['gender']) ? sanitize_text_field($atts['gender']) : '';
         }
         foreach ($_GET as $key => $value)
         {
@@ -1443,27 +1470,27 @@ $wp_object_cache->stats();
         ob_start();
         $args = [];
         $args['location']     = isset($atts['dlocation']) ? $atts['dlocation'] : '';
-        $args['location']     = isset($_GET['location']) ? $_GET['location'] : $args['location'];
+        $args['location']     = isset($_GET['location']) ? sanitize_text_field($_GET['location']) : $args['location'];
         $args['location']     = isset($atts['location']) ? $atts['location'] : $args['location'];
         $args['type']         = isset($atts['dtype']) ? $atts['dtype'] : '';
-        $args['type']         = isset($_GET['type']) ? $_GET['type'] : $args['type'];
+        $args['type']         = isset($_GET['type']) ? sanitize_text_field($_GET['type']) : $args['type'];
         $args['type']         = isset($atts['type']) ? $atts['type'] : $args['type'];
         $args['gender']       = isset($atts['dgender']) ? $atts['dgender'] : '';
-        $args['gender']       = isset($_GET['gender']) ? $_GET['gender'] : $args['gender'];
+        $args['gender']       = isset($_GET['gender']) ? sanitize_text_field($_GET['gender']) : $args['gender'];
         $args['gender']       = isset($atts['gender']) ? $atts['gender'] : $args['gender'];
-        $args['organization'] = isset($_GET['shelter_id']) ? $_GET['shelter_id'] : '';
+        $args['organization'] = isset($_GET['shelter_id']) ? sanitize_text_field($_GET['shelter_id']) : '';
         $args['organization'] = isset($atts['shelter_id']) ? $atts['shelter_id'] : $args['shelter_id'];
         //$args['status'] = isset($atts['status']) ? $atts['status'] : isset($_GET['status']) ? $_GET['status'] : '';
-        $args['size']         = isset($_GET['size']) ? $_GET['size'] : '';
+        $args['size']         = isset($_GET['size']) ? sanitize_text_field($_GET['size']) : '';
         $args['size']         = isset($atts['size']) ? $atts['size'] : $args['size'];
         $args['view']         = isset($atts['dview']) ? $atts['dview'] : 'grid';
-        $args['view']         = isset($_GET['view']) ? $_GET['view'] : $args['view'];
+        $args['view']         = isset($_GET['view']) ? sanitize_text_field($_GET['view']) : $args['view'];
         $args['view']         = isset($atts['view']) ? $atts['view'] : $args['view'];
-        $args['status']       = isset($_GET['status']) ? $_GET['status'] : '';
+        $args['status']       = isset($_GET['status']) ? sanitize_text_field($_GET['status']) : '';
         $args['status']       = isset($atts['status']) ? $atts['status'] : $args['status'];
         $args['distance']     = isset($atts['distance']) ? intval($atts['distance']) : '';
         $args['sort']         = isset($atts['sort']) ? $atts['sort'] : '';
-        $args['name']         = isset($_GET['animal_name']) ? $_GET['animal_name'] : '';
+        $args['name']         = isset($_GET['animal_name']) ? sanitize_text_field($_GET['animal_name']) : '';
         $_GET['view']         = $args['view'];
         $this->limit          = isset($atts['limit']) ? intval($atts['limit']) : $this->limit;
         $this->view           = $args['view'];
@@ -1562,7 +1589,7 @@ $wp_object_cache->stats();
             foreach ($args['choices'] as $k => $v)
             {
                 $sel = ($k == $args['value']) ? ' selected="selected"' : '';
-                echo '<option value="', $k, '"', $sel, '>', esc_attr($v), '</option>';
+                echo '<option value="', esc_attr($k), '"', $sel, '>', esc_attr($v), '</option>';
             }
         }
 ?>
