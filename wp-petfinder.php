@@ -2,9 +2,9 @@
 /**
  * Plugin Name: WP Petfinder
  * Plugin URI: https://wp.esiteq.com/wp-petfinder/
- * Description: Petfinder.com API v2 for Wordpress
+ * Description: Integrates Petfinder database with your Wordpress site via API v2
  * Author: ESITEQ
- * Version: 0.1
+ * Version: 0.3
  * Requires at least: 4.0
  * Tested up to: 5.2
  * Text Domain: wppf

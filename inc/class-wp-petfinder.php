@@ -129,10 +129,43 @@ class WP_Petfinder
      */
     public function admin_notices()
     {
+        /*
+         * We will use a trick to test if persistent object cache is enabled.
+         * Maybe Wordpress has a function for that, but I couldn't find it.
+         */
+
+        global $wp_query;
+        $md5 = md5(serialize(get_option('active_plugins')));
+        if ($md5 != get_option('wppf_active_plugins'))
+        {
+            delete_option('wppf_cache_test');
+        }
+        if (empty(get_option('wppf_cache_test')))
+        {
+            update_option('wppf_cache_test', $_SERVER['REQUEST_URI'], 'yes');
+            update_option('wppf_active_plugins', $md5, 'yes');
+            wp_cache_add('wppf_cache_test', time(), self::GROUP, $this->animals_cache_expire);
+        }
+        else
+        {
+            if ($_SERVER['REQUEST_URI'] != get_option('wppf_cache_test'))
+            {
+                $test = wp_cache_get('wppf_cache_test', self::GROUP, true);
+                $cache = ($this->get_option('cache', '0') == '1');
+                if (is_numeric($test) && $cache == true)
+                {
+?>
+<div id="message" class="notice notice-info is-dismissible">
+	<p><?php _e('We noticed that you have activated persistent object cache plugin (such as Redis Object Cache), but also have enabled this plugin\'s internal cache. You may want to disable internal caching to improve performance. To do that, turn internal cache off in plugin options ', 'wppf'); ?> <a href="admin.php?page=wppf_options"><?php _e('here', 'wppf'); ?></a>.</p>
+</div>
+<?php
+                }
+            }
+        }
         if ($this->get_option('api_key', '') == '' || $this->get_option('api_secret', '') == ''):
 ?>
 <div id="message" class="notice notice-error is-dismissible">
-	<p>You have not set Petfinder API key and/or Petfinder API secret. <a href="admin.php?page=wppf_options">Click this link to fix</a>.</p>
+	<p><?php _e('You have not set Petfinder API key and/or Petfinder API secret.', 'wppf'); ?> <a href="admin.php?page=wppf_options"><?php _e('Click this link to fix', 'wppf'); ?></a>.</p>
 </div>
 <?php
         endif;
@@ -467,11 +500,14 @@ class WP_Petfinder
             $params[$i] = explode(": ", $matches[0][$i]);
         }
         $args = [];
-        foreach ($params as $par)
+        if (is_array($params))
         {
-            if (is_array($par))
+            foreach ($params as $par)
             {
-                $args[trim($par[0])] = trim($par[1]);
+                if (is_array($par))
+                {
+                    $args[trim($par[0])] = trim($par[1]);
+                }
             }
         }
         return($args);
@@ -683,9 +719,9 @@ table.zebra th {
 ?>
 <div class="wrap">
 <?php
-d($breeds);
-$this->d($this->get_animal_permalink(46343725));
-$this->d($animal, $animal_s);
+//d($breeds);
+//$this->d($this->get_animal_permalink(46343725));
+//$this->d($animal, $animal_s);
 /*
 d($types_a, $types_a_s);
 d($types, $types_s);
@@ -1050,7 +1086,7 @@ $wp_object_cache->stats();
     public function get_option($name, $default = '')
     {
         $this->load_options();
-        return isset($this->options[$name]) ? $this->options[$name] : $default;
+        return !empty($this->options[$name]) ? $this->options[$name] : $default;
     }
     /**
      * WP_Petfinder::init()
@@ -1154,7 +1190,7 @@ $wp_object_cache->stats();
      */
     function get_animal_gender_array()
     {
-        return ['male,female' => __('Both', 'wppf'), 'male' => __('Male', 'wppf'), 'female' => __('Female', 'wppf')];
+        return ['' => __('Both', 'wppf'), 'male' => __('Male', 'wppf'), 'female' => __('Female', 'wppf')];
     }
     /**
      * WP_Petfinder::animal_gender_options()
@@ -1177,13 +1213,13 @@ $wp_object_cache->stats();
      */
     public function animal_type_options()
     {
-        $t = isset($_GET['type']) ? $_GET['type'] : 'Dog';
+        $t = isset($_GET['type']) ? $_GET['type'] : 'dog';
         $types = wppf()->get_animal_types();
         foreach ($types as $type)
         {
-            $sel = ($type['name'] == $t) ? ' selected="selected"' : '';
+            $sel = (strtolower($type['name']) == $t) ? ' selected="selected"' : '';
 ?>
-<option value="<?php echo esc_attr($type['name']); ?>"<?php echo $sel; ?>><?php echo esc_attr($type['name']); ?></option>
+<option value="<?php echo esc_attr(strtolower($type['name'])); ?>"<?php echo $sel; ?>><?php echo esc_attr($type['name']); ?></option>
 <?php
         }
     }
@@ -1353,11 +1389,15 @@ $wp_object_cache->stats();
         ob_start();
         if (!isset($_GET['location']))
         {
-            $_GET['location'] = $atts['dlocation'];
+            $_GET['location'] = isset($atts['location']) ? $atts['location'] : '';
         }
         if (!isset($_GET['type']))
         {
-            $_GET['type'] = $atts['dtype'];
+            $_GET['type'] = isset($atts['type']) ? $atts['type'] : '';
+        }
+        if (!isset($_GET['gender']))
+        {
+            $_GET['gender'] = isset($atts['gender']) ? $atts['gender'] : '';
         }
         foreach ($_GET as $key => $value)
         {

@@ -1,1 +1,0 @@
-# WP Petfinder Plugin

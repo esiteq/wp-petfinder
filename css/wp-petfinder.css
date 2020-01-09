@@ -249,6 +249,18 @@ table.wppf-info-table tr td.wppf-description
     width:100%;
     margin-top:20px;
 }
+.wppf-pagination ul {
+    margin:auto;
+    text-align:center;
+}
+.wppf-pagination ul li a {
+    display:inline-block;
+    padding:10px;
+    padding-top:5px;
+    padding-bottom:5px;
+    border:1px solid #ccc;
+    border-radius:3px;
+}
 @media only screen and (max-width: 511px) {
     .wppf-view-links {
         display:none;

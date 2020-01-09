@@ -279,7 +279,7 @@ class Paginator
             return '';
         }
 
-        $html = '<ul class="pagination">';
+        $html = '<ul>';
         if ($this->getPrevUrl()) {
             $html .= '<li><a href="' . htmlspecialchars($this->getPrevUrl()) . '">&laquo; '. $this->previousText .'</a></li>';
         }

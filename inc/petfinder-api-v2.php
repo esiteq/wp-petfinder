@@ -79,6 +79,10 @@ class Petfinder_API
             $param = array_merge($param, $args);
         }
         $response = wp_remote_get($url, $param);
+        if (is_wp_error($response))
+        {
+            return false;
+        }
         $this->response = $response;
         if ($response['response']['code'] == 200)
         {

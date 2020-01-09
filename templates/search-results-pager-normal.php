@@ -1,5 +1,5 @@
 <?php if ($paginator->getNumPages() > 1): ?>
-    <ul class="pagination">
+    <ul>
         <?php if ($paginator->getPrevUrl()): ?>
             <li><a href="<?php echo $paginator->getPrevUrl(); ?>">&laquo; Previous</a></li>
         <?php endif; ?>
