@@ -38,13 +38,45 @@ foreach (glob(VP_DATA_DIR . "/*.php") as $datasource)
 //////////////////////////
 // TGMPA Unsetting      //
 //////////////////////////
+
+if (!function_exists('vp_sanitize_text_field'))
+{
+    function vp_sanitize_text_field($val, $raw = false)
+    {
+        if ($raw)
+        {
+            return $val;
+        }
+        if (is_array($val))
+        {
+            $san = [];
+            foreach ($val as $key => $value)
+            {
+                if (is_array($value))
+                {
+                    $san[$key] = $value;
+                }
+                else
+                {
+                    $san[$key] = sanitize_text_field($value);
+                }
+            }
+        }
+        else
+        {
+            $san = sanitize_text_field($val);
+        }
+        return $san;
+    }
+}
+
 add_action('after_setup_theme', 'vp_tgm_ac_check');
 
 if( !function_exists('vp_tgm_ac_check') )
 {
 	function vp_tgm_ac_check()
 	{
-		add_action('tgmpa_register', 'vp_tgm_ac_vafpress_check');	
+		add_action('tgmpa_register', 'vp_tgm_ac_vafpress_check');
 	}
 }
 
@@ -74,8 +106,8 @@ if( !function_exists('vp_ajax_wrapper') )
 {
 	function vp_ajax_wrapper()
 	{
-		$function = $_POST['func'];
-		$params   = $_POST['params'];
+		$function = vp_sanitize_text_field($_POST['func']);
+		$params   = vp_sanitize_text_field($_POST['params']);
 
 		if( VP_Security::instance()->is_function_whitelisted($function) )
 		{
@@ -89,14 +121,14 @@ if( !function_exists('vp_ajax_wrapper') )
 			} catch (Exception $e) {
 				$result['data']    = '';
 				$result['status']  = false;
-				$result['message'] = $e->getMessage();		
+				$result['message'] = $e->getMessage();
 			}
 		}
 		else
 		{
 			$result['data']    = '';
 			$result['status']  = false;
-			$result['message'] = __("Unauthorized function", 'vp_textdomain');		
+			$result['message'] = __("Unauthorized function", 'vp_textdomain');
 		}
 
 		if (ob_get_length()) ob_clean();
@@ -194,7 +226,7 @@ if( !function_exists('vp_post_dummy_editor') )
 			echo '<div style="display: none">';
 			add_filter( 'wp_default_editor', create_function('', 'return "tinymce";') );
 			wp_editor ( '', 'vp_dummy_editor' );
-			echo '</div>';		
+			echo '</div>';
 		}
 	}
 }
@@ -222,11 +254,11 @@ if( !function_exists('vp_enqueue_scripts') )
 /**
  * Easy way to get metabox values using dot notation
  * example:
- * 
+ *
  * vp_metabox('meta_name.field_name')
  * vp_metabox('meta_name.group_name')
  * vp_metabox('meta_name.group_name.0.field_name')
- * 
+ *
  */
 
 if( !function_exists('vp_metabox') )
@@ -242,7 +274,7 @@ if( !function_exists('vp_metabox') )
 			$the_post = get_post($post_id);
 			if ( empty($the_post) ) $post_id = null;
 		}
-			
+
 		if(is_null($post) and is_null($post_id))
 			return $default;
 
@@ -292,9 +324,9 @@ if( !function_exists('vp_metabox') )
 /**
  * Easy way to get option values using dot notation
  * example:
- * 
+ *
  * vp_option('option_key.field_name')
- * 
+ *
  */
 
 if( !function_exists('vp_option') )
@@ -342,3 +374,4 @@ if( !function_exists('vp_option') )
 /**
  * EOF
  */
+?>

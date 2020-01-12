@@ -1338,3 +1338,4 @@ class Parsedown
                           'time',
     );
 }
+?>

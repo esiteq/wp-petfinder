@@ -5,7 +5,7 @@
 	<?php echo $submenu->render(array('current' => $current, 'sub_current' => $sub_current)); ?>
 	<?php endforeach; ?>
 <?php else: ?>
-<div id="<?php echo $menu->get_name(); ?>" class="vp-panel<?php if((isset($sub_current) and $sub_current) or (!isset($sub_current) and $current)) echo ' vp-current'; ?>">
+<div id="<?php echo esc_attr($menu->get_name()); ?>" class="vp-panel<?php if((isset($sub_current) and $sub_current) or (!isset($sub_current) and $current)) echo ' vp-current'; ?>">
 	<h2><span><?php echo $menu->get_title(); ?></span></h2>
 	<?php foreach ($menu->get_controls() as $control): ?>
 	<?php echo $control->render(); ?>

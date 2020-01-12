@@ -5,6 +5,8 @@ For those who need a simpler way to create their own Wordpress Theme. See the [h
 * [Vafpress Framework Plugin](https://github.com/vafour/vafpress-framework-plugin)
 * [Vafpress Framework Theme Boilerplate](https://github.com/vafour/vafpress-framework-theme-boilerplate)
 
+This version was revised and modified by Alex Bugrov to match Wordpress 5.x security standards.
+
 ## Core Features
 
 * Theme Options Builder

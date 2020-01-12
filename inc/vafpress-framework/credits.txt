@@ -13,3 +13,6 @@ Icons:
 - FontAwesome
   by Dave Gandy
   http://fortawesome.github.com/Font-Awesome/
+
+Sanitize:
+  by Alex Bugrov

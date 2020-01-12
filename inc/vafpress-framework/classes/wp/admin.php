@@ -1,5 +1,4 @@
 <?php
-
 class VP_WP_Admin
 {
 
@@ -40,7 +39,7 @@ class VP_WP_Admin
 	 */
 	public static function get_current_post_type()
 	{
-		
+
 		if(!class_exists('WPAlchemy_MetaBox'))
 		{
 			require_once VP_FileSystem::instance()->resolve_path('includes', 'wpalchemy/MetaBox');
@@ -58,7 +57,7 @@ class VP_WP_Admin
 			{
 				$post_id = WPAlchemy_MetaBox::_get_post_id();
 
-				$post_type = isset($_GET['post_type']) ? $_GET['post_type'] : NULL ;
+				$post_type = isset($_GET['post_type']) ? vp_sanitize_text_field($_GET['post_type']) : NULL ;
 
 				$post_type = $post_id ? get_post_type($post_id) : $post_type ;
 
@@ -78,3 +77,4 @@ class VP_WP_Admin
 	}
 
 }
+?>

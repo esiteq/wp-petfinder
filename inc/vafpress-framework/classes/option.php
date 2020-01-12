@@ -26,7 +26,7 @@ class VP_Option
 	private $_layout;
 
 	private $_options_set = NULL;
-	
+
 	private $_options = NULL;
 
 	private $_hook_suffix;
@@ -66,7 +66,7 @@ class VP_Option
 
 		// swim in the pool
 		self::$pool[$this->get_option_key()] = &$this;
-		
+
 		// check and set the remaining configs
 		if(isset($menu_page))             $this->set_menu_page($menu_page);
 		if(isset($is_dev_mode))           $this->is_dev_mode($is_dev_mode);
@@ -168,7 +168,7 @@ class VP_Option
 	}
 
 	public function enqueue_scripts_and_styles()
-	{	
+	{
 		$opt_loader = VP_WP_Loader::instance();
 		$opt_loader->add_types( $this->get_field_types(), 'option' );
 		$opt_loader->add_main_js( 'vp-option' );
@@ -202,14 +202,14 @@ class VP_Option
 	function ajax_save()
 	{
 		$result = $this->vp_verify_nonce();
-		
+
 		if($result['status'])
 		{
 			$this->init_options_set();
 			$this->init_options();
 
-			$option  = $_POST['option'];
-			$nonce   = $_POST['nonce'];
+			$option  = vp_sanitize_text_field($_POST['option']);
+			$nonce   = vp_sanitize_text_field($_POST['nonce']);
 
 			$option  = VP_Util_Array::unite( $option, 'name', 'value' );
 			$option  = $this->get_options_set()->normalize_values($option);
@@ -247,7 +247,7 @@ class VP_Option
 	function ajax_restore()
 	{
 		$result = $this->vp_verify_nonce();
-		
+
 		if( $result['status'] )
 		{
 			$this->init_options_set();
@@ -292,13 +292,13 @@ class VP_Option
 		$old_opt = null;
 
 		$result = $this->vp_verify_nonce();
-		
+
 		if($result['status'])
 		{
 			$this->init_options_set();
 			$this->init_options();
 
-			$option = $_POST['option'];
+			$option = vp_sanitize_text_field($_POST['option']);
 
 			if(empty($option))
 			{
@@ -312,7 +312,7 @@ class VP_Option
 				if( is_array($option) )
 				{
 					$set = $this->get_options_set();
-					
+
 					// get old options from set
 					$old_opt = $this->get_options_set()->get_values();
 
@@ -381,12 +381,12 @@ class VP_Option
 
 	function vp_verify_nonce()
 	{
-		$nonce  = $_POST['nonce'];
+		$nonce  = vp_sanitize_text_field($_POST['nonce']);
 		$verify = check_ajax_referer('vafpress', 'nonce', false);
 		if($verify)
 		{
 			$result['status']  = true;
-			$result['message'] = __("Successful", 'vp_textdomain');	
+			$result['message'] = __("Successful", 'vp_textdomain');
 		}
 		else
 		{
@@ -444,7 +444,7 @@ class VP_Option
 
 		// setup and process values
 		$set->setup($options);
-		
+
 	}
 
 	public function init_options_set()
@@ -572,7 +572,7 @@ class VP_Option
 	{
 		return $this->_options;
 	}
-	
+
 	/**
 	 * Set _options
 	 *
@@ -593,7 +593,7 @@ class VP_Option
 	{
 		return $this->_options_set;
 	}
-	
+
 	/**
 	 * Set _options_set
 	 *
@@ -614,7 +614,7 @@ class VP_Option
 	{
 		return $this->_menu_page;
 	}
-	
+
 	/**
 	 * Set _menu_page
 	 *
@@ -635,7 +635,7 @@ class VP_Option
 	{
 		return $this->_layout;
 	}
-	
+
 	/**
 	 * Get _layout
 	 *
@@ -656,7 +656,7 @@ class VP_Option
 	{
 		return $this->_page_slug;
 	}
-	
+
 	/**
 	 * Set _page_slug
 	 *
@@ -677,7 +677,7 @@ class VP_Option
 	{
 		return $this->_menu_label;
 	}
-	
+
 	/**
 	 * Set _menu_label
 	 *
@@ -698,7 +698,7 @@ class VP_Option
 	{
 		return $this->_page_title;
 	}
-	
+
 	/**
 	 * Set _page_title
 	 *
@@ -719,7 +719,7 @@ class VP_Option
 	{
 		return $this->_minimum_role;
 	}
-	
+
 	/**
 	 * Set _minimum_role value
 	 *
@@ -740,7 +740,7 @@ class VP_Option
 	{
 		return $this->_option_key;
 	}
-	
+
 	/**
 	 * Set _option_key value
 	 *
@@ -793,3 +793,4 @@ class VP_Option
 /**
  * EOF
  */
+?>

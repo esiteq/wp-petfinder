@@ -2,10 +2,10 @@
 
 <?php if(!$is_compact): ?>
 <div class="vp-field <?php echo $type; ?><?php echo !empty($container_extra_classes) ? (' ' . $container_extra_classes) : ''; ?>"
-	data-vp-type="<?php echo $type; ?>"
+	data-vp-type="<?php echo esc_attr($type); ?>"
 	<?php echo VP_Util_Text::print_if_exists(isset($dependency) ? $dependency : '', 'data-vp-dependency="%s"'); ?>
 	<?php echo $is_hidden ? 'style="display: none;"' : ''; ?>
-	id="<?php echo $name; ?>">
+	id="<?php echo esc_attr($name); ?>">
 <?php endif; ?>
 	<?php switch ($status) {
 		case 'normal':

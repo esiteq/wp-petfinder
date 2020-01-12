@@ -116,10 +116,9 @@ class WP_Petfinder
     {
         if ($this->get_option('custom_css', '') != '')
         {
-            // I am not sure if it is a good idea to sanitize CSS, but let's try it
 ?>
 <style type="text/css">
-<?php echo sanitize_text_field($this->get_option('custom_css', '')); ?>
+<?php echo $this->get_option('custom_css', ''); ?>
 </style>
 <?php
         }

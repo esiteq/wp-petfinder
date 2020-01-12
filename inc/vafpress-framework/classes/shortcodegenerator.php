@@ -75,7 +75,7 @@ class VP_ShortcodeGenerator
 						$f['type'] = 'textarea';
 					}
 				}
-			}	
+			}
 		}
 	}
 
@@ -93,7 +93,7 @@ class VP_ShortcodeGenerator
 						$field_types[] = $f['type'];
 					}
 				}
-			}	
+			}
 		}
 		return $field_types;
 	}
@@ -177,8 +177,8 @@ class VP_ShortcodeGenerator
 	{
 		$modal_id = $this->name . '_modal';
 		?>
-		<div id="<?php echo $modal_id; ?>" class="vp-sc-dialog reveal-modal xlarge">
-			<h1><?php echo $this->modal_title; ?></h1>
+		<div id="<?php echo esc_attr($modal_id); ?>" class="vp-sc-dialog reveal-modal xlarge">
+			<h1><?php echo esc_html($this->modal_title); ?></h1>
 			<div class="vp-sc-scroll-container">
 				<div class="vp-sc-wrapper">
 					<ul class="vp-sc-menu">
@@ -346,7 +346,7 @@ class VP_ShortcodeGenerator
 					'onclick' => "tinyMCE.execCommand('{$sg->name}_cmd');",
 					// Show on visual AND html mode
 					'both'    => true
-				);	
+				);
 			}
 		}
 		return $buttons;

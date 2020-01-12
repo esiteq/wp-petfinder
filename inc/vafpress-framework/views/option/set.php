@@ -4,7 +4,7 @@
 		<div id="vp-option-panel"class="vp-option-panel <?php echo ($set->get_layout() === 'fixed') ? 'fixed-layout' : 'fluid-layout' ; ?>">
 			<div class="vp-left-panel">
 				<div id="vp-logo" class="vp-logo">
-					<img src="<?php echo VP_Util_Res::img($set->get_logo()); ?>" alt="<?php echo $set->get_title(); ?>" />
+					<img src="<?php echo esc_attr(VP_Util_Res::img($set->get_logo())); ?>" alt="<?php echo esc_attr($set->get_title()); ?>" />
 				</div>
 				<div id="vp-menus" class="vp-menus">
 					<ul class="vp-menu-level-1">

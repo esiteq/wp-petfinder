@@ -230,3 +230,4 @@ function vp_dep_boolean($value)
 /**
  * EOF
  */
+?>

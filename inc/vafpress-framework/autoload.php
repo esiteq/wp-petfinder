@@ -217,3 +217,4 @@ class VP_AutoLoader
 /**
  * EOF
  */
+?>

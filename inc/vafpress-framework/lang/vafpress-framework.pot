@@ -1,5 +1,6 @@
 # LANGUAGE (LOCALE) translation for Vafpress Framework.
 # Copyright (C) 2013 Vafpress.com
+# Modified by Alex Bugrov (https://github.com/esiteq)
 # Translators:
 msgid ""
 msgstr ""
