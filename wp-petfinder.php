@@ -13,9 +13,9 @@
  */
 
 define('WPPF_DIR', realpath(dirname(__file__)));
+require_once WPPF_DIR. '/inc/vafpress-framework/bootstrap.php';
 require_once WPPF_DIR. '/inc/class-wp-petfinder.php';
 require_once WPPF_DIR. '/inc/petfinder-api-v2.php';
-require_once WPPF_DIR. '/inc/vafpress-framework/bootstrap.php';
 // Widgets
 require_once WPPF_DIR. '/inc/widgets/animals-from-shelter.php';
 require_once WPPF_DIR. '/inc/widgets/search-form.php';

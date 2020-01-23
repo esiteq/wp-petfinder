@@ -1559,7 +1559,7 @@ $wp_object_cache->stats();
         }
 ?>
 <p>
-    <label for="<?php echo esc_attr($args['id']); ?>"><?php echo $args['title'], $tooltip; ?></label>
+    <label for="<?php echo esc_attr($args['id']); ?>"><?php echo esc_html($args['title']), $tooltip; ?></label>
     <input class="widefat" id="<?php echo esc_attr($args['id']); ?>" name="<?php echo esc_attr($args['name']); ?>" type="text" value="<?php echo esc_attr($args['value']); ?>" />
 </p>
 <?php
@@ -1580,7 +1580,7 @@ $wp_object_cache->stats();
         //echo '<pre>'; print_r($cl); echo '</pre>';
 ?>
 <p>
-    <label for="<?php echo esc_attr($args['id']); ?>"><?php echo $args['title'], $tooltip; ?></label>
+    <label for="<?php echo esc_attr($args['id']); ?>"><?php echo esc_html($args['title']), $tooltip; ?></label>
     <select class="widefat <?php echo esc_attr($class); ?>" id="<?php echo esc_attr($args['id']); ?>" name="<?php echo esc_attr($args['name']); ?>" value="<?php echo esc_attr($args['value']); ?>">
 <?php
         if (is_array($args['choices']))
@@ -1588,7 +1588,7 @@ $wp_object_cache->stats();
             foreach ($args['choices'] as $k => $v)
             {
                 $sel = ($k == $args['value']) ? ' selected="selected"' : '';
-                echo '<option value="', esc_attr($k), '"', $sel, '>', esc_attr($v), '</option>';
+                echo '<option value="', esc_attr($k), '"', $sel, '>', esc_html($v), '</option>';
             }
         }
 ?>
