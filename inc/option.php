@@ -48,6 +48,13 @@ return
                     'fields' =>
                     [
                         [
+                            'type'          => 'toggle',
+                            'name'          => 'permalinks_disable',
+							'label'         => __('Turn Off permalinks', 'wppf'),
+							'description'   => __('Overrides global Wordpress permalink settings. Replaces WP Petfinder permalinks with URL parameters. Worse for SEO', 'wppf'),
+							'default'       => '0',
+                        ],
+                        [
                             'type'           => 'select',
                             'name'           => 'results_page',
                             'label'          => __('Search Results page', 'wppf'),

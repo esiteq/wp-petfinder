@@ -19,42 +19,24 @@
 // define a constant to prevent other instances from running again ...
 
 add_action('admin_head', array('WPAlchemy_MetaBox', '_global_head'));
-
 add_action('admin_footer', array('WPAlchemy_MetaBox', '_global_foot'));
-
 define('WPALCHEMY_MODE_ARRAY', 'array');
-
 define('WPALCHEMY_MODE_EXTRACT', 'extract');
-
 define('WPALCHEMY_FIELD_HINT_TEXT', 'text');
-
 define('WPALCHEMY_FIELD_HINT_TEXTAREA', 'textarea');
-
 define('WPALCHEMY_FIELD_HINT_CHECKBOX', 'checkbox');
-
 define('WPALCHEMY_FIELD_HINT_CHECKBOX_MULTI', 'checkbox_multi');
-
 define('WPALCHEMY_FIELD_HINT_RADIO', 'radio');
-
 define('WPALCHEMY_FIELD_HINT_SELECT', 'select');
-
 define('WPALCHEMY_FIELD_HINT_SELECT_MULTI', 'select_multi');
-
 // depreciated, use WPALCHEMY_FIELD_HINT_SELECT_MULTI instead
 define('WPALCHEMY_FIELD_HINT_SELECT_MULTIPLE', 'select_multiple');
-
 define('WPALCHEMY_LOCK_TOP', 'top');
-
 define('WPALCHEMY_LOCK_BOTTOM', 'bottom');
-
 define('WPALCHEMY_LOCK_BEFORE_POST_TITLE', 'before_post_title');
-
 define('WPALCHEMY_LOCK_AFTER_POST_TITLE', 'after_post_title');
-
 define('WPALCHEMY_VIEW_START_OPENED', 'opened');
-
 define('WPALCHEMY_VIEW_START_CLOSED', 'closed');
-
 define('WPALCHEMY_VIEW_ALWAYS_OPENED', 'always_opened');
 
 class WPAlchemy_MetaBox
@@ -449,29 +431,21 @@ class WPAlchemy_MetaBox
 	 */
 	var $_loop_data;
 
-	function WPAlchemy_MetaBox($arr)
+	function __construct($arr)
 	{
 		$this->_loop_data = new stdClass;
-
 		$this->meta = array();
-
 		$this->types = array('post', 'page');
-
 		if (isset($arr) and is_array($arr))
 		{
 			foreach ($arr as $n => $v)
 			{
 				$this->$n = $v;
 			}
-
 			if (empty($this->id)) die('Meta box ID required');
-
 			if (is_numeric($this->id)) die('Meta box ID must be a string');
-
 			if (empty($this->template)) die('Meta box template file required');
-
 			// check for nonarray values
-
 			$exc_inc = array
 			(
 				'exclude_template',
@@ -480,7 +454,6 @@ class WPAlchemy_MetaBox
 				'exclude_tag_id',
 				'exclude_tag',
 				'exclude_post_id',
-
 				'include_template',
 				'include_category_id',
 				'include_category',
@@ -488,7 +461,6 @@ class WPAlchemy_MetaBox
 				'include_tag',
 				'include_post_id'
 			);
-
 			foreach ($exc_inc as $v)
 			{
 				// ideally the exclude and include values should be in array form, convert to array otherwise
@@ -497,13 +469,10 @@ class WPAlchemy_MetaBox
 					$this->$v = array_map('trim',explode(',',$this->$v));
 				}
 			}
-
 			// convert depreciated variables
 			if ($this->lock_on_top) $this->lock = WPALCHEMY_LOCK_TOP;
 			elseif ($this->lock_on_bottom) $this->lock = WPALCHEMY_LOCK_BOTTOM;
-
 			add_action('admin_init', array($this,'_init'));
-
 			// uses the default wordpress-importer plugin hook
 			add_action('import_post_meta', array($this, '_import'), 10, 3);
 		}

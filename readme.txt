@@ -27,6 +27,8 @@ Displays Pet search form. Available options:
 
 Displays search results. Available options:
 
+**cache**: set cache expiration time in seconds. Default value is 86400 seconds (24 hours). To disable caching (not recommended), set **cache=1**.
+
 **location**: display animals from specific location. For this option, you can use: city, state; latitude,longitude; or postal code. Example: [pf_search_form location="33025"]. This option will override value set in URL variable.
 
 **type**: animal type.  Possible values: dog, cat and more (refer to https://www.petfinder.com/developers/v2/docs/#get-animal-types). This option will override value set in URL variable.
@@ -93,6 +95,8 @@ Options are available under WP Petfinder menu.
 
 **WP Petfinder Cache**: will significantly speed up API calls by caching results using local database. If you are using third party caching plugins such as WP Total Cache, Redis Object Catche, etc - you can turn this option Off. Otherwise keep it On.
 
+**Turn Off permalinks**: enable it, if you are getting empty page instead of animal details page. 
+
 **Search Results page**: users will be redirected to this page when they click Submit in search form (both shortcode and widget). If page is not set, it will use current page for search results.
 
 **Animal details page**: users will be redirected to this page when they click animal profile in search results.
@@ -128,6 +132,22 @@ Answer.
 Screenshots will be uploaded soon.
 
 == Changelog ==
+= 0.7 =
+* Improved error reporting.
+
+= 0.6 =
+* Improved theme compatibility.
+
+= 0.5 =
+* Bugfix: Search Results page creation on plugin activation.
+
+= 0.4 =
+* Improved compatibility with other plugins and themes, especially jQuery v1.9 and newer.
+* Added cache parameter to pf_search_results shortcode.
+* Added forced Disable permalinks to plugin options. Turn it on if clicking on search results redirects to an empty page.
+
+= 0.3 =
+* Varous bugfixes
 
 = 0.2 =
 * Support of different pages for Cat & Dog adoption. You can still use the same page for all animal types.

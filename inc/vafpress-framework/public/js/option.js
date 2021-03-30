@@ -16,7 +16,7 @@
 		return result;
 	};
 
-	var is_ie      = $.browser.msie;
+	var is_ie      = false; //$.browser.msie;
 	var ie_version = 0;
 
 	if(is_ie)

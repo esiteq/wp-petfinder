@@ -4,9 +4,9 @@
  * Plugin URI: https://wp.esiteq.com/wp-petfinder/
  * Description: Integrates Petfinder database with your Wordpress site via API v2
  * Author: ESITEQ
- * Version: 0.3
+ * Version: 0.6
  * Requires at least: 4.0
- * Tested up to: 5.2
+ * Tested up to: 5.4
  * Text Domain: wppf
  * Domain Path: /languages
  * Author URI: https://www.esiteq.com
@@ -30,6 +30,25 @@ function wppf_activate()
 {
     require_once ABSPATH . 'wp-admin/includes/upgrade.php';
     $options = get_option('wppf_options', []);
+    //results_page
+    if (!isset($options['results_page']) || $options['results_page'] == 0)
+    {
+        $page =
+        [
+            'post_title'    => __('Animal Search Results', 'wppf'),
+            'post_content'  => '[pf_search_results]',
+            'post_status'   => 'publish',
+            'post_author'   => 1,
+            'post_type'     => 'page'
+        ];
+        $post_id = wp_insert_post($page);
+        if (is_numeric($post_id))
+        {
+            $options['results_page'] = $post_id;
+            update_option('wppf_options', $options, 'yes');
+        }
+    }
+    //
     if (!isset($options['animal_page']) || $options['animal_page'] == 0)
     {
         $page =
@@ -47,6 +66,7 @@ function wppf_activate()
             update_option('wppf_options', $options, 'yes');
         }
     }
+    //
     if (!isset($options['adopt_page']) || $options['adopt_page'] == 0)
     {
         $page =

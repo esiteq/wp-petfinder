@@ -45,5 +45,5 @@ jQuery(document).ready(function($)
         $('#'+target).attr('src', img);
     });
     // gallery carousel
-    $(".carousel").carousel();
+    //$(".carousel").carousel();
 });

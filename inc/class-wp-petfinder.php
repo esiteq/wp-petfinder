@@ -32,6 +32,7 @@ class WP_Petfinder
     public  $animals_cache_expire = 3600 * 24;  // cache expires in 24 hours
     private $ad_link, $page_title;
     public  $animal, $breeds;
+    public  $response; // API response code and msg is stored here
     /**
      * WP_Petfinder::__construct()
      * Class constructor. Has no input.
@@ -237,7 +238,12 @@ class WP_Petfinder
         }
         else
         {
-            $link = $this->ad_link . '&id='. $id;
+            $and = '?';
+            if (!get_option('permalink_structure', ''))
+            {
+                $and = '&';
+            }
+            $link = $this->ad_link . $and. 'id='. $id;
         }
         return $link;
     }
@@ -374,8 +380,8 @@ class WP_Petfinder
     {
         $ver = (self::DEBUG == true) ? time() : self::VERSION;
         wp_enqueue_style( 'driveway', $this->plugins_url('css/driveway.min.css'));
-        wp_enqueue_style( 'slick', $this->plugins_url('css/slick.css'));
-        wp_enqueue_script('slick', $this->plugins_url('js/slick.min.js'), ['jquery'], self::VERSION, true);
+        wp_enqueue_style( 'pf-slick', $this->plugins_url('css/slick.css'));
+        wp_enqueue_script('pf-slick', $this->plugins_url('js/slick.min.js'), ['jquery'], self::VERSION, true);
         //wp_enqueue_style('material-icons', 'https://fonts.googleapis.com/icon?family=Material+Icons', [], $ver);
         /*
         wp_enqueue_style( 'fancybox', $this->plugins_url('css/jquery.fancybox.min.css'));
@@ -639,6 +645,11 @@ class WP_Petfinder
      */
     private function permalinks_active()
     {
+        $perm = $this->get_option('permalinks_disable', '0');
+        if ($perm == '1')
+        {
+            return false;
+        }
         return get_option('permalink_structure', '');
     }
     /**
@@ -841,6 +852,10 @@ $wp_object_cache->stats();
         {
             $expire = $this->animals_cache_expire;
         }
+        if (is_numeric($args['cache']))
+        {
+            $expire = $args['cache'];
+        }
         $args['limit'] = $this->limit;
         $this->get_current_page();
         $args['page'] = $this->paged;
@@ -853,6 +868,7 @@ $wp_object_cache->stats();
         {
             $this->source = 'api';
             $response = $this->api->get_animals($args);
+            $this->response = $this->api->response['response'];
             if (isset($response['pagination']))
             {
                 $this->pagination = $response['pagination'];
@@ -861,7 +877,7 @@ $wp_object_cache->stats();
             if (isset($response['animals']))
             {
                 $animals = $response['animals'];
-                $this->cache_set($key, $animals, $expiry);
+                $this->cache_set($key, $animals, $expire);
             }
         }
         if (!is_array($animals))
@@ -1490,6 +1506,7 @@ $wp_object_cache->stats();
         $args['distance']     = isset($atts['distance']) ? intval($atts['distance']) : '';
         $args['sort']         = isset($atts['sort']) ? $atts['sort'] : '';
         $args['name']         = isset($_GET['animal_name']) ? sanitize_text_field($_GET['animal_name']) : '';
+        $args['cache']        = isset($atts['cache']) ? intval($atts['cache']) : $this->animals_cache_expire;
         $_GET['view']         = $args['view'];
         $this->limit          = isset($atts['limit']) ? intval($atts['limit']) : $this->limit;
         $this->view           = $args['view'];
